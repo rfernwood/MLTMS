@@ -1,6 +1,6 @@
 ---
 title: "Initial Exploratory Data Analysis (WIP)"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -42,6 +42,6 @@ lob_summary <- raw %>%
             last_ry = max(reporting_year))
 ```
 
-```{r, echo = FALSE}
-DT::datatable(lob_summary)
+```{r, echo = FALSE, result = "asis"}
+knitr::kable(lob_summary)
 ```
