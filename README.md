@@ -10,4 +10,4 @@ Source code and reports associated with the project are hosted here, and the Iss
 For those new to GitHub/Git a good source (light reading) can be found at [https://github.com/jennybc/happy-git-with-r](https://github.com/jennybc/happy-git-with-r)
 
 ## Members
-Kevin Kuo [@kevinykuo](https://github.com/kevinykuo), Hidemasa Oda [@hidemasa2439](https://github.com/hidemasa2439), Zack Martin @ZJMartin, Salma Jamal @SalmaJamal, Hong Shen @hongshen1010, @Greenwind1, Lorenzo Invernizzi @LorenzoInvernizzi
+Kevin Kuo [@kevinykuo](https://github.com/kevinykuo), Hidemasa Oda [@hidemasa2439](https://github.com/hidemasa2439), Zack Martin [@ZJMartin](https://github.com/ZJMartin), Salma Jamal [@SalmaJamal](https://github.com/salmajamal), Hong Shen [@hongshen1010](https://github.com/hongshen1010), [@Greenwind1](https://github.com/Greenwind1), Lorenzo Invernizzi [@LorenzoInvernizzi](https://github.com/LorenzoInvernizzi)
