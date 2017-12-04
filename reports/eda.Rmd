@@ -10,36 +10,24 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 
 ## Exploratory data analysis
 
-We provide high level descriptive statistics on the data. Note that we should refrain from showing detailed information from all but the first few calendar years available before we decide on a validation approach to prevent leakage. The input data has also been scaled to provide further anonymity. Feel free to edit/correct/append or otherwise contribute to this document.
+We provide high level descriptive statistics on the data. Note that we should refrain from showing detailed information from all but the first few calendar years available before we decide on a validation approach to prevent leakage. Feel free to edit/correct/append or otherwise contribute to this document.
 
-### Summary by LOB
+### Year ranges by LOB
+
+The following table shows the first and last accident year, calendar year, and report years for which transactions exist for each of the LOB.
 
 ```{r echo = FALSE, message = FALSE}
-library(readr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-raw <- read_csv("data/data_f.csv")
-lob_summary <- raw %>%
-  rename(accident_year = AccidentYear,
-         transaction_type = Transaction,
-         claim_number = ClaimNb,
-         lob = Occupancy,
-         reporting_year = ReportingYear,
-         cover_type = CoverType,
-         status = Status) %>%
-  mutate(lob = lob %>%
-           gsub("^Lob", "", .) %>%
-           str_pad(2, side = "left", pad = "0"),
-         calendar_year = accident_year + dev / 12 - 1) %>%
+library(tidyverse)
+data <- read_csv("data/combined_data_full.csv")
+lob_summary <- data %>%
   group_by(lob, cover_type) %>%
   filter(value > 0) %>%
   summarize(first_ay = min(accident_year),
             last_ay = max(accident_year),
             first_cy = min(calendar_year),
             last_cy = max(calendar_year),
-            first_ry = min(reporting_year),
-            last_ry = max(reporting_year))
+            first_ry = min(report_year),
+            last_ry = max(report_year))
 ```
 
 ```{r, echo = FALSE, result = "asis"}
