@@ -1,11 +1,5 @@
 #Claim Count Plots
 
-#This file uses the output from the "process_and_export" function
-#Output is a pdf file with plots of claim count sliced different ways
-#The code will work on any data frame of the form here, so similar graphs can be 
-#produced for subsets of the total liability data (e.g. train/test subsets).
-
-
 #libraries
 library(dplyr)
 library(ggplot2)
@@ -24,8 +18,12 @@ liab.data = all.data %>% filter(lob == "Liability")
 plot.count = function(df, select_var, group_var=NULL) {
   if(is.null(group_var)) {
     
-    plotdata = df %>% mutate_at(vars(starts_with(select_var)), funs(as.character)) %>%
+    plotdata = df %>% mutate_at(vars(starts_with(select_var)), funs(as.factor)) %>% select(select_var, claim_number) %>%
       group_by_(select_var) %>% summarise(claim_count = n_distinct(claim_number))
+    
+    if(select_var == "dev") {
+      plotdata$dev = factor(plotdata$dev,sort(as.numeric(levels(plotdata$dev)[plotdata$dev])))
+    }
     
     p=ggplot(data = plotdata, aes_string(x = select_var, y = quote(claim_count))) + geom_bar(stat = "identity") +
       labs(title = paste0("Claim Count: ",select_var), x = select_var, y = "Claim Count") + 
@@ -33,8 +31,12 @@ plot.count = function(df, select_var, group_var=NULL) {
       theme_minimal() + theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5))
     return(p)
   } else {
-    plotdata = df %>% mutate_at(vars(starts_with(select_var),starts_with(group_var)), funs(as.character)) %>%
+    plotdata = df %>% mutate_at(vars(starts_with(select_var),starts_with(group_var)), funs(as.factor)) %>%
       group_by_(.dots = c(select_var, group_var)) %>% summarise(claim_count = n_distinct(claim_number))
+    
+    if(select_var == "dev"||group_var == "dev") {
+      plotdata$dev = factor(plotdata$dev,sort(unique(as.numeric(levels(plotdata$dev)[plotdata$dev]))))
+    }
     
     p=ggplot(data = plotdata, aes_string(x = select_var, y = quote(claim_count), fill = group_var)) + geom_bar(stat = "identity", position = "dodge") +
       labs(title = paste0("Claim Count: ",select_var, " x ", group_var), x = select_var, y = "Claim Count", fill = group_var) + 
@@ -47,18 +49,20 @@ plot.count = function(df, select_var, group_var=NULL) {
 p1=plot.count(liab.data, "accident_year")
 p2=plot.count(liab.data, "report_year")
 p3=plot.count(liab.data, "calendar_year")
-p4=plot.count(liab.data, "occupancy")
-p5=plot.count(liab.data, "status")
-p6=plot.count(liab.data, "transaction_type")
-p7=plot.count(liab.data, "cover_type")
+p4=plot.count(liab.data, "dev")
+p5=plot.count(liab.data, "occupancy")
+p6=plot.count(liab.data, "status")
+p7=plot.count(liab.data, "transaction_type")
+p8=plot.count(liab.data, "cover_type")
 
-p8=plot.count(liab.data, "accident_year","status")
-p9=plot.count(liab.data, "calendar_year","status")
-p10=plot.count(liab.data, "report_year","status")
+p9=plot.count(liab.data, "accident_year","status")
+p10=plot.count(liab.data, "calendar_year","status")
+p11=plot.count(liab.data, "report_year","status")
+p12=plot.count(liab.data, "dev", "status")
 
 #Since there are so many occupancies a facet grid is easiest
 #Accident Year
-p11=ggplot(liab.data %>% mutate(accident_year = as.character(accident_year), occupancy = as.character(occupancy)) %>% 
+p13=ggplot(liab.data %>% mutate(accident_year = as.character(accident_year), occupancy = as.character(occupancy)) %>% 
          group_by(accident_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = accident_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = accident_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
@@ -66,7 +70,7 @@ p11=ggplot(liab.data %>% mutate(accident_year = as.character(accident_year), occ
   facet_grid(occupancy ~ .) + theme_bw()
 
 #Calendar Year
-p12=ggplot(liab.data %>% mutate(calendar_year = as.character(calendar_year), occupancy = as.character(occupancy)) %>% 
+p14=ggplot(liab.data %>% mutate(calendar_year = as.character(calendar_year), occupancy = as.character(occupancy)) %>% 
          group_by(calendar_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = calendar_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = calendar_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
@@ -74,51 +78,55 @@ p12=ggplot(liab.data %>% mutate(calendar_year = as.character(calendar_year), occ
   facet_grid(occupancy ~ .) + theme_bw()
 
 #Report Year
-p13=ggplot(liab.data %>% mutate(report_year = as.character(report_year), occupancy = as.character(occupancy)) %>% 
+p15=ggplot(liab.data %>% mutate(report_year = as.character(report_year), occupancy = as.character(occupancy)) %>% 
          group_by(report_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = report_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = report_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
   theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5)) +
   facet_grid(occupancy ~ .) + theme_bw()
+
        
 
-p14=plot.count(liab.data, "accident_year","transaction_type")
-p15=plot.count(liab.data, "calendar_year","transaction_type")
-p16=plot.count(liab.data, "report_year","transaction_type")
+p16=plot.count(liab.data, "accident_year","transaction_type")
+p17=plot.count(liab.data, "calendar_year","transaction_type")
+p18=plot.count(liab.data, "report_year","transaction_type")
+p19=plot.count(liab.data, "dev","transaction_type")
 
-p17=plot.count(liab.data, "accident_year","cover_type")
-p18=plot.count(liab.data, "calendar_year","cover_type")
-p19=plot.count(liab.data, "report_year","cover_type")
+p20=plot.count(liab.data, "accident_year","cover_type")
+p21=plot.count(liab.data, "calendar_year","cover_type")
+p22=plot.count(liab.data, "report_year","cover_type")
+p23=plot.count(liab.data, "dev","cover_type")
 
-p20=plot.count(liab.data, "transaction_type","cover_type")
-p21=plot.count(liab.data, "occupancy", "transaction_type")
-p22=plot.count(liab.data, "transaction_type", "status")
-p23=plot.count(liab.data, "occupancy","cover_type")
-p24=plot.count(liab.data, "occupancy","status")
-p25=plot.count(liab.data, "cover_type","status")
+p24=plot.count(liab.data, "transaction_type","cover_type")
+p25=plot.count(liab.data, "occupancy", "transaction_type")
+p26=plot.count(liab.data, "transaction_type", "status")
+p27=plot.count(liab.data, "occupancy","cover_type")
+p28=plot.count(liab.data, "occupancy","status")
+p29=plot.count(liab.data, "cover_type","status")
 
 
 ### Output ###
 #1-var summaries
 pdf("count eda.pdf", width = 12, height = 8)
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7)
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8)
 
 #status by year
-grid.arrange(p8,p9,p10)
+grid.arrange(p9,p10,p11,p12)
 
 #Occupancy by year
-p11
-p12
 p13
+p14
+p15
 
 #Transaction Type by Year
-grid.arrange(p14,p15,p16)
+grid.arrange(p16,p17,p18,p19)
 
 #Cover Type by Year
-grid.arrange(p17,p18,p19)
+grid.arrange(p20,p21,p22,p23)
 
 #Misc
-grid.arrange(p20,p21,p22,p23,p24,p25)
+grid.arrange(p24,p25,p26,p27,p28,p29)
 
 dev.off()
+
