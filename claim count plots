@@ -1,10 +1,20 @@
-#Claim Count Plots
+---
+title: "Count-Based EDA"
+output: github_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width = 12, fig.height = 8)
+```
+
+```{r Initial data pull and processing, echo=FALSE, message = FALSE}
 #libraries
 library(dplyr)
 library(ggplot2)
 library(grid)
 library(gridExtra)
+library(knitr)
 
 setwd("C:/Users/ross/Desktop/MLTSM/")
 
@@ -47,8 +57,8 @@ plot.count = function(df, select_var, group_var=NULL) {
 }
 
 p1=plot.count(liab.data, "accident_year")
-p2=plot.count(liab.data, "report_year")
-p3=plot.count(liab.data, "calendar_year")
+p2=plot.count(liab.data, "calendar_year")
+p3=plot.count(liab.data, "report_year")
 p4=plot.count(liab.data, "dev")
 p5=plot.count(liab.data, "occupancy")
 p6=plot.count(liab.data, "status")
@@ -66,24 +76,23 @@ p13=ggplot(liab.data %>% mutate(accident_year = as.character(accident_year), occ
          group_by(accident_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = accident_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = accident_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
-  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5)) +
-  facet_grid(occupancy ~ .) + theme_bw()
+  facet_grid(occupancy ~ .) + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5))
 
 #Calendar Year
 p14=ggplot(liab.data %>% mutate(calendar_year = as.character(calendar_year), occupancy = as.character(occupancy)) %>% 
          group_by(calendar_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = calendar_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = calendar_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
-  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5)) +
-  facet_grid(occupancy ~ .) + theme_bw()
-
+  facet_grid(occupancy ~ .) + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5))
 #Report Year
 p15=ggplot(liab.data %>% mutate(report_year = as.character(report_year), occupancy = as.character(occupancy)) %>% 
          group_by(report_year, occupancy) %>% summarise(claim_count = n_distinct(claim_number)),
        aes(x = report_year, y = claim_count)) + geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(x = report_year, y = claim_count, label = claim_count), nudge_x = 0, nudge_y = 25, size = 3) +
-  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5)) +
-  facet_grid(occupancy ~ .) + theme_bw()
+  facet_grid(occupancy ~ .) + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5))
 
        
 
@@ -103,30 +112,166 @@ p26=plot.count(liab.data, "transaction_type", "status")
 p27=plot.count(liab.data, "occupancy","cover_type")
 p28=plot.count(liab.data, "occupancy","status")
 p29=plot.count(liab.data, "cover_type","status")
+```
 
 
-### Output ###
-#1-var summaries
-pdf("count eda.pdf", width = 12, height = 8)
+##Liability Data (All Records)    
+  
+  
+##One-Variable Summary
 
-grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8)
+###Accident Year
+```{r plot_1, echo = FALSE, message = FALSE}
+p1
+```
 
-#status by year
-grid.arrange(p9,p10,p11,p12)
+###Calendar Year
+```{r plot_2, echo = FALSE, message = FALSE}
+p2
+```
 
-#Occupancy by year
+###Report Year
+```{r plot_3, echo = FALSE, message = FALSE}
+p3
+```
+
+###Development Age (Months)
+```{r plot_4, echo = FALSE, message = FALSE}
+p4
+```
+
+###Occupancy Code
+```{r plot_5, echo = FALSE, message = FALSE}
+p5
+```
+
+###Claim Status
+```{r plot_6, echo = FALSE, message = FALSE}
+p6
+```
+
+###Transaction Type
+```{r plot_7, echo = FALSE, message = FALSE}
+p7
+```
+
+###Cover Type
+```{r plot_8, echo = FALSE, message = FALSE}
+p8
+```
+
+##Claim Status by Year
+
+###Claim Status by Accident Year
+```{r plot_9, echo = FALSE, message = FALSE}
+p9
+```
+
+###Claim Status by Calendar Year
+```{r plot_10, echo = FALSE, message = FALSE}
+p10
+```
+
+###Claim Status by Report Year
+```{r plot_11, echo = FALSE, message = FALSE}
+p11
+```
+
+###Claim Status by Development Age (Months)
+```{r plot_12, echo = FALSE, message = FALSE}
+p12
+```
+
+##Occupancy Code by Year
+
+###Occupancy Code by Accident Year
+```{r plot_13, echo = FALSE, message = FALSE}
 p13
+```
+
+###Occupancy Code by Calendar Year
+```{r plot_14, echo = FALSE, message = FALSE}
 p14
+```
+
+###Occupancy Code by Report Year
+```{r plot_15, echo = FALSE, message = FALSE}
 p15
+```
 
-#Transaction Type by Year
-grid.arrange(p16,p17,p18,p19)
+##Transaction Type by Year
 
-#Cover Type by Year
-grid.arrange(p20,p21,p22,p23)
+###Transaction Type by Accident Year
+```{r plot_16, echo = FALSE, message = FALSE}
+p16
+```
 
-#Misc
-grid.arrange(p24,p25,p26,p27,p28,p29)
+###Transaction Type by Calendar Year
+```{r plot_17, echo = FALSE, message = FALSE}
+p17
+```
 
-dev.off()
+###Transaction Type by Report Year
+```{r plot_18, echo = FALSE, message = FALSE}
+p18
+```
+
+###Transaction Type by Development Age (Months)
+```{r plot_19, echo = FALSE, message = FALSE}
+p19
+```
+
+##Cover Type by Year
+
+###Cover Type by Accident Year
+```{r plot_20, echo = FALSE, message = FALSE}
+p20
+```
+
+###Cover Type by Calendar Year
+```{r plot_21, echo = FALSE, message = FALSE}
+p21
+```
+
+###Cover Type by Report Year
+```{r plot_22, echo = FALSE, message = FALSE}
+p22
+```
+
+###Cover Type by Development Age (Months)
+```{r plot_23, echo = FALSE, message = FALSE}
+p23
+```
+
+##Other Two-Variable Comparisons
+
+###Transaction Type by Cover Type
+```{r plot_24, echo = FALSE, message = FALSE}
+p24
+```
+
+###Occupancy Code by Transaction Type
+```{r plot_25, echo = FALSE, message = FALSE}
+p25
+```
+
+###Transaction Type by Claim Status
+```{r plot_26, echo = FALSE, message = FALSE}
+p26
+```
+
+###Occupancy Code by Cover Type
+```{r plot_27, echo = FALSE, message = FALSE}
+p27
+```
+
+###Occupancy Code by Claim Status
+```{r plot_28, echo = FALSE, message = FALSE}
+p28
+```
+
+###Cover Type by Claim Status
+```{r plot_29, echo = FALSE, message = FALSE}
+p29
+```
 
